@@ -298,7 +298,6 @@ while running:
     # GAME OVER SCREEN
     stalled = True
     while stalled:
-        pygame.event.wait()
         screen.fill(BLACK)
         myfont = pygame.font.SysFont('Courier New', 60)
         textsurface = myfont.render(f'SCORE: {score}', True, WHITE)
