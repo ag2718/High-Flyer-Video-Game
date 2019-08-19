@@ -34,7 +34,7 @@ obstacle_color = LBLUE
 player_speed = 7.5
 player_size = [25, 50]
 obstacle_size = 20
-game_speed = 9.5
+game_speed = 7.5
 game_speed_increase_rate = 0.75
 fps = 60
 
@@ -57,7 +57,7 @@ class Player:
             self.pos[0] -= self.speed
             self.rotate_angle = 90 - \
                 math.degrees(math.atan(game_speed/player_speed))
-        elif pressed_keys[pygame.K_RIGHT] and self.pos[0] < screen_width - self.speed:
+        elif pressed_keys[pygame.K_RIGHT] and self.pos[0] < screen_width - self.size[0] - self.speed:
             # If right arrow key is pressed, move right and rotate right
             self.pos[0] += self.speed
             self.rotate_angle = math.degrees(
