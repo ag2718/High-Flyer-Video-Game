@@ -250,12 +250,9 @@ while home_screen:
                 home_screen = False
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                print(1)
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if home_screen_button.is_clicked(mouse_x, mouse_y):
                     instructions_page = False
-                    print(2)
-
         screen.fill(LBLUE)
         drawText(screen, "Dodge the obstacles as you fly higher and higher. Use the left and right arrow keys to move horizontally. The game will get faster and faster as you progress throughout the course. Good luck!",
                  WHITE, pygame.Rect(20, 20, screen_width - 40, 450), pygame.font.SysFont('Courier New', 45))
