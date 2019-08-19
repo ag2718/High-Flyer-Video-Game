@@ -156,9 +156,6 @@ home_screen_button = Button(screen_width/2 - 200, 450, 400, 100, color=ORANGE,
                             text="HOME SCREEN", textcolor=WHITE, fontsize=50)
 go_sign = Button(screen_width/2, screen_height/2, 0, 0, text='GO!',
                  textcolor=WHITE, fontsize=120, font='Courier New')
-score = 0
-score_display = Button(0, 0, 250, 75, color=BLACK,
-                       text=f'SCORE: {score}', textcolor=WHITE, fontsize=30, font='Courier New')
 retry_button = Button(100, 400, 250, 150, color=GREEN,
                       text="RETRY", textcolor=WHITE, fontsize=50)
 quit_button = Button(450, 400, 250, 150, color=RED,
@@ -321,6 +318,8 @@ while running:
             pygame.mixer.music.stop()
 
         # Score text display
+        score_display = Button(0, 0, 250, 75, color=BLACK,
+                               text=f'SCORE: {score}', textcolor=WHITE, fontsize=30, font='Courier New')
         score_display.draw(screen)
 
         pygame.display.update()
