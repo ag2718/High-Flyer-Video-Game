@@ -13,6 +13,7 @@ BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 WHITE = (255, 255, 255)
 ORANGE = (255, 165, 0)
+YELLOW = (255, 255, 0)
 
 # Initialize Pygame
 pygame.init()
@@ -75,7 +76,7 @@ class Player:
 
             if (obstacle_x >= player_x and obstacle_x <= player_x + self.size[0]) or (player_x >= obstacle_x and player_x <= obstacle_x + obstacle.size):
                 if (obstacle_y >= player_y and obstacle_y <= (player_y + self.size[1])
-                        ) or (player_y >= obstacle_y and player_y <= (obstacle_y + obstacle.size)):
+                    ) or (player_y >= obstacle_y and player_y <= (obstacle_y + obstacle.size)):
                     return True
 
         return False
@@ -146,8 +147,10 @@ class Button:
 
 # Initialize the buttons and text that will be used throughout the game
 
-title = Button(0, 50, screen_width, 200, color=BLACK, text='HIGH FLYER',
-               textcolor=WHITE, fontsize=60)
+title1 = Button(0, 50, screen_width, 200, color=LBLUE, text='HIGH FLYER',
+                textcolor=WHITE, fontsize=60)
+title2 = Button(0, 50, screen_width, 200, color=ORANGE, text='HIGH FLYER',
+                textcolor=WHITE, fontsize=60)
 start_button = Button(screen_width/2 - 200, 300, 400, 100, color=GREEN,
                       text=f'START', textcolor=WHITE, fontsize=50, font='Courier New')
 instructions_button = Button(screen_width/2 - 200, 450, 400, 100, color=LBLUE,
@@ -204,11 +207,14 @@ def drawText(surface, text, color, rect, font, aa=False, bkg=None):
 
 home_screen = True
 by_pos = 0
+title = True
 
 pygame.mixer.music.load('Sound\Home_Screen_Music.mp3')
 pygame.mixer.music.play(-1)
 
 while home_screen:
+
+    title = not title
 
     instructions_page = False
 
@@ -235,7 +241,7 @@ while home_screen:
         screen.blit(background, (0, rel_by_pos))
     by_pos += game_speed
 
-    title.draw(screen)
+    title1.draw(screen) if title else title2.draw(screen)
     start_button.draw(screen)
     instructions_button.draw(screen)
 
