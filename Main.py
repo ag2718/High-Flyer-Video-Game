@@ -111,6 +111,60 @@ class Obstacle:
                          (self.pos[0], self.pos[1], 20, 20))
 
 
+class Button:
+    """Class that allows you to easily create a button, or any text in general (includes the centering feature which makes writing text easy)"""
+
+    def __init__(self, x, y, width, height, color=WHITE, text='', textcolor=BLACK, fontsize=11, font='Courier New', no_rect=False):
+        """Function to initialize the button."""
+        self.x, self.y = x, y
+        self.width, self.height = width, height
+        self.center_x, self.center_y = self.x + self.width/2, self.y + self.height/2
+        self.color, self.textcolor = color, textcolor
+        self.font = pygame.font.SysFont(font, fontsize)
+        self.no_rect = no_rect
+        self.text = text
+
+    def draw(self, screen):
+        """Function that draws rectangle and text of button on the screen (if required)."""
+        if not self.no_rect:
+            pygame.draw.rect(screen, self.color,
+                             (self.x, self.y, self.width, self.height))
+
+        # Display text
+        pygame.font.init()
+        text = self.font.render(self.text, True, self.textcolor)
+        screen.blit(text, [self.center_x - text.get_rect().width /
+                           2, self.center_y - text.get_rect().height/2])
+
+    # Actual functionality
+    def is_clicked(self, mouse_x, mouse_y):
+        """Function that checks whether the input mouse_x and mouse_y are inside the button (for clicking functionality)."""
+        if (self.x <= mouse_x <= self.x + self.width) and (self.y <= mouse_y <= self.y + self.height):
+            button_sound.play()
+            return True
+
+
+# Initialize the buttons and text that will be used throughout the game
+
+title = Button(0, 50, screen_width, 200, color=BLACK, text='HIGH FLYER',
+               textcolor=WHITE, fontsize=60)
+start_button = Button(screen_width/2 - 200, 300, 400, 100, color=GREEN,
+                      text=f'START', textcolor=WHITE, fontsize=50, font='Courier New')
+instructions_button = Button(screen_width/2 - 200, 450, 400, 100, color=LBLUE,
+                             text='INSTRUCTIONS', textcolor=WHITE, fontsize=50)
+home_screen_button = Button(screen_width/2 - 200, 450, 400, 100, color=ORANGE,
+                            text="HOME SCREEN", textcolor=WHITE, fontsize=50)
+go_sign = Button(screen_width/2, screen_height/2, 0, 0, text='GO!',
+                 textcolor=WHITE, fontsize=120, font='Courier New')
+score = 0
+score_display = Button(0, 0, 250, 75, color=BLACK,
+                       text=f'SCORE: {score}', textcolor=WHITE, fontsize=30, font='Courier New')
+retry_button = Button(100, 400, 250, 150, color=GREEN,
+                      text="RETRY", textcolor=WHITE, fontsize=50)
+quit_button = Button(450, 400, 250, 150, color=RED,
+                     text="QUIT", textcolor=WHITE, fontsize=50)
+
+
 def drawText(surface, text, color, rect, font, aa=False, bkg=None):
     """Function for wrapping text"""
     rect = pygame.Rect(rect)
@@ -151,33 +205,6 @@ def drawText(surface, text, color, rect, font, aa=False, bkg=None):
     return text
 
 
-def button(screen, x, y, width, height, color=WHITE, text='', textcolor=BLACK, fontsize=11, font='Arial', no_rect=False):
-    """Function that allows you to easily create a button, or any text in general"""
-
-    center_x, center_y = x + width/2, y + height/2
-
-    # Draw rectangle
-    if not no_rect:
-        pygame.draw.rect(screen, color, (x, y, width, height))
-
-    # Display text
-    pygame.font.init()
-    myfont = pygame.font.SysFont(font, fontsize)
-    text = myfont.render(text, True, textcolor)
-    screen.blit(text, [center_x - text.get_rect().width /
-                       2, center_y - text.get_rect().height/2])
-
-    # Actual functionality
-    for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            print(mouse_x, mouse_y, x, x + width, y, y + height)
-            if (mouse_x >= x and mouse_x <= x + width) and (mouse_y >= y and mouse_y <= y + height):
-                button_sound.play()
-                print("Working")
-                return True
-
-
 home_screen = True
 by_pos = 0
 
@@ -186,11 +213,23 @@ pygame.mixer.music.play(-1)
 
 while home_screen:
 
-    # Check to see if user presses quit button
+    instructions_page = False
+
+    # Check to see if user presses quit button or clicks one of the other buttons
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             home_screen = False
             running = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+
+            # Check to see if buttons are clicked
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            if start_button.is_clicked(mouse_x, mouse_y):
+                home_screen = False
+                pygame.mixer.fadeout(10000)
+                running = True
+            if instructions_button.is_clicked(mouse_x, mouse_y):
+                instructions_page = True
 
     # Scrolling background
     rel_by_pos = by_pos % background.get_rect().height
@@ -199,32 +238,30 @@ while home_screen:
         screen.blit(background, (0, rel_by_pos))
     by_pos += game_speed
 
-    button(screen, 0, 50, screen_width, 200, color=BLACK, text='HIGH FLYER',
-           textcolor=WHITE, fontsize=60, font="Courier New")
+    title.draw(screen)
+    start_button.draw(screen)
+    instructions_button.draw(screen)
 
-    if (button(screen, screen_width/2 - 200, 300, 400, 100, color=GREEN,
-               text=f'START', textcolor=WHITE, fontsize=50, font='Courier New')):
-        home_screen = False
-        pygame.mixer.fadeout(10000)
-        running = True
-    if (button(screen, screen_width/2 - 200, 450, 400, 100, color=LBLUE,
-               text=f'INSTRUCTIONS', textcolor=WHITE, fontsize=50, font='Courier New')):
-        instructions_page = True
-        while instructions_page:
-            # Check if user presses quit button
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    instructions_page = False
-                    home_screen = False
-                    running = False
-
-            screen.fill(LBLUE)
-            drawText(screen, "Dodge the obstacles as you fly higher and higher. Use the left and right arrow keys to move horizontally. The game will get faster and faster as you progress throughout the course. Good luck!",
-                     WHITE, pygame.Rect(20, 20, screen_width - 40, 450), pygame.font.SysFont('Courier New', 45))
-            if (button(screen, screen_width/2 - 200, 450, 400, 100, color=ORANGE,
-                       text="HOME SCREEN", textcolor=WHITE, fontsize=50, font='Courier New')):
+    while instructions_page:
+        # Check if user presses quit button or clicks button
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 instructions_page = False
-            pygame.display.update()
+                home_screen = False
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                print(1)
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                if home_screen_button.is_clicked(mouse_x, mouse_y):
+                    instructions_page = False
+                    print(2)
+
+        screen.fill(LBLUE)
+        drawText(screen, "Dodge the obstacles as you fly higher and higher. Use the left and right arrow keys to move horizontally. The game will get faster and faster as you progress throughout the course. Good luck!",
+                 WHITE, pygame.Rect(20, 20, screen_width - 40, 450), pygame.font.SysFont('Courier New', 45))
+        home_screen_button.draw(screen)
+
+        pygame.display.update()
 
     pygame.display.update()
 
@@ -242,8 +279,7 @@ while running:
     pygame.mixer.music.play(-1)
 
     screen.fill(GREEN)
-    button(screen, screen_width/2, screen_height/2, 0, 0, text='GO!',
-           textcolor=WHITE, fontsize=120, font='Courier New')
+    go_sign.draw(screen)
     pygame.display.update()
     pygame.time.delay(500)
 
@@ -288,34 +324,36 @@ while running:
             pygame.mixer.music.stop()
 
         # Score text display
-        myfont = pygame.font.SysFont('Courier New', 30)
-        textsurface = myfont.render(f'SCORE: {score}', True, WHITE)
-        button(screen, 0, 0, 250, 75, color=BLACK,
-               text=f'SCORE: {score}', textcolor=WHITE, fontsize=30, font='Courier New')
+        score_display.draw(screen)
 
         pygame.display.update()
 
     # GAME OVER SCREEN
-    stalled = True
-    while stalled:
-        screen.fill(BLACK)
-        myfont = pygame.font.SysFont('Courier New', 60)
-        textsurface = myfont.render(f'SCORE: {score}', True, WHITE)
-        screen.blit(textsurface, (200, 200))
-        textsurface = myfont.render('GAME OVER', True, GREEN)
-        screen.blit(textsurface, (200, 100))
+
+    screen.fill(BLACK)
+
+    myfont = pygame.font.SysFont('Courier New', 60)
+    textsurface = myfont.render(f'SCORE: {score}', True, WHITE)
+    screen.blit(textsurface, (200, 200))
+    textsurface = myfont.render('GAME OVER', True, GREEN)
+    screen.blit(textsurface, (200, 100))
+
+    retry_button.draw(screen)
+    quit_button.draw(screen)
+    pygame.display.update()
+
+    while game_over:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
-                stalled = False
-        # If user presses the "RETRY" button, go back to the top of the loop
-        if (button(screen, 100, 400, 250, 150, GREEN, "RETRY", WHITE, 50, "Courier New")):
-            running, stalled = True, False
-        # If the user presses "QUIT", exit out of the game
-        elif (button(screen, 450, 400, 250, 150, RED, "QUIT", WHITE, 50, "Courier New")):
-            running, stalled = False, False
-
-        pygame.display.update()
+                running, game_over = False, False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                # If user presses the "RETRY" button, go back to the top of the loop
+                if retry_button.is_clicked(mouse_x, mouse_y):
+                    running, game_over = True, False
+                # If the user presses "QUIT", exit out of the game
+                elif quit_button.is_clicked(mouse_x, mouse_y):
+                    running, game_over = False, False
 
 pygame.quit()
