@@ -35,6 +35,7 @@ obstacle_color = LBLUE
 PLAYER_SPEED = 7.5
 PLAYER_SIZE = [25, 50]
 OBSTACLE_SIZE = 20
+NUM_OBSTACLES = 10
 GAME_SPEED = 7.5
 GAME_ACCELERATION = 0.75
 FPS = 60
@@ -295,7 +296,8 @@ while running:
 
     # Creating player and obstacle objects
     player = Player(PLAYER_SPEED, PLAYER_SIZE[0], PLAYER_SIZE[1])
-    obstacles = [Obstacle(OBSTACLE_SIZE, GAME_SPEED) for _ in range(10)]
+    obstacles = [Obstacle(OBSTACLE_SIZE, GAME_SPEED)
+                 for _ in range(NUM_OBSTACLES)]
 
     # Start playing game music
     pygame.mixer.music.load('Sound\Music.mp3')
