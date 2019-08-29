@@ -27,7 +27,7 @@ button_sound = pygame.mixer.Sound("Sound\Button.wav")
 
 # Load in visuals
 background = pygame.transform.rotozoom(
-    pygame.image.load("Images\Background.png"), 90, 0.2).convert_alpha()
+    pygame.image.load("Images\Background.png"), 90, 1).convert_alpha()
 player_img = pygame.image.load("Images\Rocket.png").convert_alpha()
 obstacle_color = LBLUE
 
