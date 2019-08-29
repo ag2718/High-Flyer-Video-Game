@@ -79,10 +79,14 @@ class Player:
             player_x, player_y = self.pos
             obstacle_x, obstacle_y = obstacle.pos
 
+            # If player collides with walls, return TRUE (collision detected)
+            if (self.speed > self.pos[0]) or (self.pos[0] > SCREEN_WIDTH - self.size[0] - self.speed):
+                return True
+
             # If player overlaps with obstacle, return TRUE (collision detected)
             if (obstacle_x >= player_x and obstacle_x <= player_x + self.size[0]) or (player_x >= obstacle_x and player_x <= obstacle_x + obstacle.size):
                 if (obstacle_y >= player_y and obstacle_y <= (player_y + self.size[1])
-                        ) or (player_y >= obstacle_y and player_y <= (obstacle_y + obstacle.size)):
+                    ) or (player_y >= obstacle_y and player_y <= (obstacle_y + obstacle.size)):
                     return True
 
         # Return FALSE if no collisions are detected
@@ -158,10 +162,8 @@ class Button:
 
 # Initialize the buttons and text that will be used throughout the game
 
-title1 = Button(0, 50, SCREEN_WIDTH, 200, color=LBLUE, text='HIGH FLYER',
-                textcolor=WHITE, fontsize=60)
-title2 = Button(0, 50, SCREEN_WIDTH, 200, color=ORANGE, text='HIGH FLYER',
-                textcolor=WHITE, fontsize=60)
+title = Button(0, 50, SCREEN_WIDTH, 200, color=ORANGE, text='HIGH FLYER',
+               textcolor=WHITE, fontsize=60)
 start_button = Button(SCREEN_WIDTH/2 - 200, 300, 400, 100, color=GREEN,
                       text=f'START', textcolor=WHITE, fontsize=50, font='Courier New')
 instructions_button = Button(SCREEN_WIDTH/2 - 200, 450, 400, 100, color=LBLUE,
@@ -257,9 +259,7 @@ while home_screen:
         screen.blit(background, (0, rel_by_pos))
     by_pos += GAME_SPEED
 
-    # Flip title color repeatedly to provide flashing animation
-    title_blue = not title_blue
-    title1.draw(screen) if title_blue else title2.draw(screen)
+    title.draw(screen)
     start_button.draw(screen)
     instructions_button.draw(screen)
 
