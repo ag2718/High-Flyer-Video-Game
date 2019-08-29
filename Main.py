@@ -1,10 +1,11 @@
+# Import libraries
 import pygame
 import math
 import random
 
 # Display size parameters
-screen_width = 800
-screen_height = 600
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
 
 # Colors
 RED = (255, 0, 0)
@@ -18,7 +19,7 @@ ORANGE = (255, 165, 0)
 pygame.init()
 pygame.font.init()
 pygame.display.set_caption('High Flyer')
-screen = pygame.display.set_mode((screen_width, screen_height))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Load in sound effects and music
 death_sound = pygame.mixer.Sound("Sound\Explosion.wav")
@@ -31,12 +32,12 @@ player_img = pygame.image.load("Images\Rocket.png").convert_alpha()
 obstacle_color = LBLUE
 
 # Parameters for the game (sizes, speed, etc.)
-player_speed = 7.5
-player_size = [25, 50]
-obstacle_size = 20
-game_speed = 7.5
-game_speed_increase_rate = 0.75
-fps = 60
+PLAYER_SPEED = 7.5
+PLAYER_SIZE = [25, 50]
+OBSTACLE_SIZE = 20
+GAME_SPEED = 7.5
+GAME_ACCELERATION = 0.75
+FPS = 60
 
 
 class Player:
@@ -46,38 +47,44 @@ class Player:
         """Initializes player's attributes based on input parameters"""
         self.size = [width, height]
         self.speed = speed
-        self.pos = [screen_width/2, screen_height - 2 * self.size[1]]
+        self.pos = [SCREEN_WIDTH/2, SCREEN_HEIGHT - 2 * self.size[1]]
         self.rotate_angle = 0
 
     def move(self):
         """Controls the player's movement from left to right, along with the rotation animation."""
         pressed_keys = pygame.key.get_pressed()
+
+        # If left arrow key is pressed, move left and rotate left
         if pressed_keys[pygame.K_LEFT] and self.pos[0] > self.speed:
-            # If left arrow key is pressed, move left and rotate left
             self.pos[0] -= self.speed
             self.rotate_angle = 90 - \
-                math.degrees(math.atan(game_speed/player_speed))
-        elif pressed_keys[pygame.K_RIGHT] and self.pos[0] < screen_width - self.size[0] - self.speed:
-            # If right arrow key is pressed, move right and rotate right
+                math.degrees(math.atan(GAME_SPEED/PLAYER_SPEED))
+
+        # If right arrow key is pressed, move right and rotate right
+        elif pressed_keys[pygame.K_RIGHT] and self.pos[0] < SCREEN_WIDTH - self.size[0] - self.speed:
             self.pos[0] += self.speed
             self.rotate_angle = math.degrees(
-                math.atan(game_speed/self.speed)) - 90
+                math.atan(GAME_SPEED/self.speed)) - 90
+
+        # If player is moving straight, gradually reduce the rotation angle
         else:
-            # If player is moving straight, gradually reduce the rotation angle
             self.rotate_angle *= 0.5
 
     def detect_collision(self, obstacles_list):
         """Detects if the player collides with any of the obstacles"""
+        # Check for collisions with each obstacle
         for obstacle in obstacles_list:
-            # Check for collisions with each enemy using a loop
+
             player_x, player_y = self.pos
             obstacle_x, obstacle_y = obstacle.pos
 
+            # If player overlaps with obstacle, return TRUE (collision detected)
             if (obstacle_x >= player_x and obstacle_x <= player_x + self.size[0]) or (player_x >= obstacle_x and player_x <= obstacle_x + obstacle.size):
                 if (obstacle_y >= player_y and obstacle_y <= (player_y + self.size[1])
-                    ) or (player_y >= obstacle_y and player_y <= (obstacle_y + obstacle.size)):
+                        ) or (player_y >= obstacle_y and player_y <= (obstacle_y + obstacle.size)):
                     return True
 
+        # Return FALSE if no collisions are detected
         return False
 
     def draw(self, screen):
@@ -90,20 +97,24 @@ class Player:
 class Obstacle:
     """A class that represents the obstacles the player has to try to avoid."""
 
-    def __init__(self, obstacle_size, game_speed):
+    def __init__(self, OBSTACLE_SIZE, GAME_SPEED):
         """Initializes obstacle objects."""
-        self.size = obstacle_size
-        self.pos = [random.randint(self.size, screen_width - 2 * self.size), 0]
-        self.speed = game_speed
+        self.size = OBSTACLE_SIZE
+        self.pos = [random.randint(self.size, SCREEN_WIDTH - 2 * self.size), 0]
+        self.speed = GAME_SPEED
 
     def fall(self):
         """Controls animation of obstacles moving downward."""
-        if self.pos[1] >= 0 and self.pos[1] < screen_height:
+
+        # Obstacle moves downward if it has not hit the ground yet
+        if self.pos[1] >= 0 and self.pos[1] < SCREEN_HEIGHT:
             self.pos[1] += self.speed
+
+        # If obstacle has hit the ground, reset its position to the top of the screen
         else:
             self.pos = [random.randint(
-                self.size, screen_width - 2 * self.size), 0]
-            self.speed += game_speed_increase_rate
+                self.size, SCREEN_WIDTH - 2 * self.size), 0]
+            self.speed += GAME_ACCELERATION
 
     def draw(self, screen):
         """Draws obstacle on the screen."""
@@ -114,7 +125,7 @@ class Obstacle:
 class Button:
     """Class that allows you to easily create a button, or any text in general (includes the centering feature which makes writing text easy)"""
 
-    def __init__(self, x, y, width, height, color=WHITE, text='', textcolor=BLACK, fontsize=11, font='Courier New', no_rect=False):
+    def __init__(self, x, y, width=0, height=0, color=WHITE, text='', textcolor=BLACK, fontsize=11, font='Courier New', no_rect=False):
         """Function to initialize the button."""
         self.x, self.y = x, y
         self.width, self.height = width, height
@@ -146,18 +157,18 @@ class Button:
 
 # Initialize the buttons and text that will be used throughout the game
 
-title1 = Button(0, 50, screen_width, 200, color=LBLUE, text='HIGH FLYER',
+title1 = Button(0, 50, SCREEN_WIDTH, 200, color=LBLUE, text='HIGH FLYER',
                 textcolor=WHITE, fontsize=60)
-title2 = Button(0, 50, screen_width, 200, color=ORANGE, text='HIGH FLYER',
+title2 = Button(0, 50, SCREEN_WIDTH, 200, color=ORANGE, text='HIGH FLYER',
                 textcolor=WHITE, fontsize=60)
-start_button = Button(screen_width/2 - 200, 300, 400, 100, color=GREEN,
+start_button = Button(SCREEN_WIDTH/2 - 200, 300, 400, 100, color=GREEN,
                       text=f'START', textcolor=WHITE, fontsize=50, font='Courier New')
-instructions_button = Button(screen_width/2 - 200, 450, 400, 100, color=LBLUE,
+instructions_button = Button(SCREEN_WIDTH/2 - 200, 450, 400, 100, color=LBLUE,
                              text='INSTRUCTIONS', textcolor=WHITE, fontsize=50)
-home_screen_button = Button(screen_width/2 - 200, 450, 400, 100, color=ORANGE,
+home_screen_button = Button(SCREEN_WIDTH/2 - 200, 450, 400, 100, color=ORANGE,
                             text="HOME SCREEN", textcolor=WHITE, fontsize=50)
-go_sign = Button(screen_width/2, screen_height/2, 0, 0, text='GO!',
-                 textcolor=WHITE, fontsize=120, font='Courier New')
+go_sign = Button(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, text='GO!',
+                 textcolor=WHITE, fontsize=120, font='Courier New', no_rect=True)
 retry_button = Button(100, 400, 250, 150, color=GREEN,
                       text="RETRY", textcolor=WHITE, fontsize=50)
 quit_button = Button(450, 400, 250, 150, color=RED,
@@ -165,30 +176,31 @@ quit_button = Button(450, 400, 250, 150, color=RED,
 
 
 def drawText(surface, text, color, rect, font, aa=False, bkg=None):
-    """Function for wrapping text"""
+    """Function for wrapping text."""
+
     rect = pygame.Rect(rect)
     y = rect.top
     lineSpacing = -2
 
-    # get the height of the font
+    # Get the height of the font
     fontHeight = font.size("Tg")[1]
 
     while text:
         i = 1
 
-        # determine if the row of text will be outside our area
+        # Determine if the row of text will be outside the area
         if y + fontHeight > rect.bottom:
             break
 
-        # determine maximum width of line
+        # Determine maximum width of line
         while font.size(text[:i])[0] < rect.width and i < len(text):
             i += 1
 
-        # if we've wrapped the text, then adjust the wrap to the last word
+        # If the text has been wrapped, adjust the wrap to the last word
         if i < len(text):
             i = text.rfind(" ", 0, i) + 1
 
-        # render the line and blit it to the surface
+        # Render the line and blit it to the surface
         if bkg:
             image = font.render(text[:i], 1, color, bkg)
             image.set_colorkey(bkg)
@@ -198,23 +210,24 @@ def drawText(surface, text, color, rect, font, aa=False, bkg=None):
         surface.blit(image, (rect.left, y))
         y += fontHeight + lineSpacing
 
-        # remove the text we just blitted
+        # Remove the text that was just blitted
         text = text[i:]
 
-    return text
 
-
+# Application starts off on the home screen
 home_screen = True
-by_pos = 0
-title = True
 
+# Variable to keep track of background scrolling position, and color of title
+by_pos = 0
+title_blue = True
+
+# Start playing home screen music
 pygame.mixer.music.load('Sound\Home_Screen_Music.mp3')
 pygame.mixer.music.play(-1)
 
 while home_screen:
 
-    title = not title
-
+    # Right now the application is not on the instructions page
     instructions_page = False
 
     # Check to see if user presses quit button or clicks one of the other buttons
@@ -223,29 +236,35 @@ while home_screen:
             home_screen = False
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-
-            # Check to see if buttons are clicked
+            # Check to see if buttons are clicked by getting mouse position on click
             mouse_x, mouse_y = pygame.mouse.get_pos()
+
+            # If start button is clicked, exit the home screen and start running the game
             if start_button.is_clicked(mouse_x, mouse_y):
                 home_screen = False
                 pygame.mixer.fadeout(10000)
                 running = True
+
+            # Display the instructions if the instructions button is clicked
             if instructions_button.is_clicked(mouse_x, mouse_y):
                 instructions_page = True
 
     # Scrolling background
     rel_by_pos = by_pos % background.get_rect().height
     screen.blit(background, (0, rel_by_pos - background.get_rect().height))
-    if rel_by_pos < screen_height + background.get_rect().height:
+    if rel_by_pos < SCREEN_HEIGHT + background.get_rect().height:
         screen.blit(background, (0, rel_by_pos))
-    by_pos += game_speed
+    by_pos += GAME_SPEED
 
-    title1.draw(screen) if title else title2.draw(screen)
+    # Flip title color repeatedly to provide flashing animation
+    title_blue = not title_blue
+    title1.draw(screen) if title_blue else title2.draw(screen)
     start_button.draw(screen)
     instructions_button.draw(screen)
 
+    # Instructions screen
     while instructions_page:
-        # Check if user presses quit button or clicks button
+        # Check if user presses quit button or clicks home screen button
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 instructions_page = False
@@ -253,11 +272,14 @@ while home_screen:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
+                # Exit the instructions page if home screen button clicked
                 if home_screen_button.is_clicked(mouse_x, mouse_y):
                     instructions_page = False
+
+        # Display instructions text
         screen.fill(LBLUE)
         drawText(screen, "Dodge the obstacles as you fly higher and higher. Use the left and right arrow keys to move horizontally. The game will get faster and faster as you progress throughout the course. Good luck!",
-                 WHITE, pygame.Rect(20, 20, screen_width - 40, 450), pygame.font.SysFont('Courier New', 45))
+                 WHITE, pygame.Rect(20, 20, SCREEN_WIDTH - 40, 450), pygame.font.SysFont('Courier New', 45))
         home_screen_button.draw(screen)
 
         pygame.display.update()
@@ -271,24 +293,28 @@ while running:
     score = 0
     game_over = False
 
-    player = Player(player_speed, player_size[0], player_size[1])
-    obstacles = [Obstacle(obstacle_size, game_speed) for _ in range(10)]
+    # Creating player and obstacle objects
+    player = Player(PLAYER_SPEED, PLAYER_SIZE[0], PLAYER_SIZE[1])
+    obstacles = [Obstacle(OBSTACLE_SIZE, GAME_SPEED) for _ in range(10)]
 
+    # Start playing game music
     pygame.mixer.music.load('Sound\Music.mp3')
     pygame.mixer.music.play(-1)
 
+    # Go sign
     screen.fill(GREEN)
     go_sign.draw(screen)
     pygame.display.update()
     pygame.time.delay(500)
 
+    # Initialize clock
     clock = pygame.time.Clock()
 
     while not game_over:
         # Loop that repeats during the course of the game
 
-        # Clock ticks at specified fps
-        clock.tick(fps)
+        # Clock ticks at specified FPS
+        clock.tick(FPS)
 
         # Increment score
         score += round(obstacles[0].speed**2 * 0.01)
@@ -296,9 +322,9 @@ while running:
         # Scrolling background
         rel_by_pos = by_pos % background.get_rect().height
         screen.blit(background, (0, rel_by_pos - background.get_rect().height))
-        if rel_by_pos < screen_height + background.get_rect().height:
+        if rel_by_pos < SCREEN_HEIGHT + background.get_rect().height:
             screen.blit(background, (0, rel_by_pos))
-        by_pos += game_speed
+        by_pos += GAME_SPEED
 
         # Check to see if user exits out of the game
         for event in pygame.event.get():
@@ -333,12 +359,14 @@ while running:
 
     screen.fill(BLACK)
 
+    # Game over screen text and score display
     myfont = pygame.font.SysFont('Courier New', 60)
     textsurface = myfont.render(f'SCORE: {score}', True, WHITE)
     screen.blit(textsurface, (200, 200))
     textsurface = myfont.render('GAME OVER', True, GREEN)
     screen.blit(textsurface, (200, 100))
 
+    # Draw buttons to retry or quit
     retry_button.draw(screen)
     quit_button.draw(screen)
     pygame.display.update()
@@ -350,7 +378,7 @@ while running:
                 running, game_over = False, False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                # If user presses the "RETRY" button, go back to the top of the loop
+                # If user presses the "RETRY" button, go back to the top of the loop and restart game
                 if retry_button.is_clicked(mouse_x, mouse_y):
                     running, game_over = True, False
                 # If the user presses "QUIT", exit out of the game
