@@ -1,4 +1,4 @@
-# Import libraries
+# Import librares
 import pygame
 import math
 import random
@@ -19,16 +19,17 @@ ORANGE = (255, 165, 0)
 pygame.init()
 pygame.font.init()
 pygame.display.set_caption('High Flyer')
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode(
+    (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Load in sound effects and music
-death_sound = pygame.mixer.Sound("Sound\Explosion.wav")
-button_sound = pygame.mixer.Sound("Sound\Button.wav")
+death_sound = pygame.mixer.Sound("Sound/Explosion.wav")
+button_sound = pygame.mixer.Sound("Sound/Button.wav")
 
 # Load in visuals
 background = pygame.transform.rotozoom(
-    pygame.image.load("Images\Background.png"), 90, 1).convert_alpha()
-player_img = pygame.image.load("Images\Rocket.png").convert_alpha()
+    pygame.image.load("Images/Background.png"), 90, 1).convert_alpha()
+player_img = pygame.image.load("Images/Rocket.png").convert_alpha()
 obstacle_color = LBLUE
 
 # Parameters for the game (sizes, speed, etc.)
@@ -86,7 +87,7 @@ class Player:
             # If player overlaps with obstacle, return TRUE (collision detected)
             if (obstacle_x >= player_x and obstacle_x <= player_x + self.size[0]) or (player_x >= obstacle_x and player_x <= obstacle_x + obstacle.size):
                 if (obstacle_y >= player_y and obstacle_y <= (player_y + self.size[1])
-                    ) or (player_y >= obstacle_y and player_y <= (obstacle_y + obstacle.size)):
+                        ) or (player_y >= obstacle_y and player_y <= (obstacle_y + obstacle.size)):
                     return True
 
         # Return FALSE if no collisions are detected
@@ -165,7 +166,7 @@ class Button:
 title = Button(0, 50, SCREEN_WIDTH, 200, color=ORANGE, text='HIGH FLYER',
                textcolor=WHITE, fontsize=60)
 start_button = Button(SCREEN_WIDTH/2 - 200, 300, 400, 100, color=GREEN,
-                      text=f'START', textcolor=WHITE, fontsize=50, font='Courier New')
+                      text="START", textcolor=WHITE, fontsize=50, font='Courier New')
 instructions_button = Button(SCREEN_WIDTH/2 - 200, 450, 400, 100, color=LBLUE,
                              text='INSTRUCTIONS', textcolor=WHITE, fontsize=50)
 home_screen_button = Button(SCREEN_WIDTH/2 - 200, 450, 400, 100, color=ORANGE,
@@ -225,7 +226,7 @@ by_pos = 0
 title_blue = True
 
 # Start playing home screen music
-pygame.mixer.music.load('Sound\Home_Screen_Music.mp3')
+pygame.mixer.music.load('Sound/Home_Screen_Music.mp3')
 pygame.mixer.music.play(-1)
 
 while home_screen:
@@ -300,7 +301,7 @@ while running:
                  for _ in range(NUM_OBSTACLES)]
 
     # Start playing game music
-    pygame.mixer.music.load('Sound\Music.mp3')
+    pygame.mixer.music.load('Sound/Music.mp3')
     pygame.mixer.music.play(-1)
 
     # Go sign
@@ -352,7 +353,7 @@ while running:
 
         # Score text display
         score_display = Button(0, 0, 250, 75, color=BLACK,
-                               text=f'SCORE: {score}', textcolor=WHITE, fontsize=30, font='Courier New')
+                               text='SCORE: ' + str(score), textcolor=WHITE, fontsize=30, font='Courier New')
         score_display.draw(screen)
 
         pygame.display.update()
@@ -363,7 +364,7 @@ while running:
 
     # Game over screen text and score display
     myfont = pygame.font.SysFont('Courier New', 60)
-    textsurface = myfont.render(f'SCORE: {score}', True, WHITE)
+    textsurface = myfont.render('SCORE: ' + str(score), True, WHITE)
     screen.blit(textsurface, (200, 200))
     textsurface = myfont.render('GAME OVER', True, GREEN)
     screen.blit(textsurface, (200, 100))
